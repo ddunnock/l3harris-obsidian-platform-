@@ -1,94 +1,142 @@
-# Obsidian Sample Plugin
+# Custom UI Plugin for Obsidian
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+A powerful Obsidian plugin that restructures the UI with a custom header, menu bar, and React-based note viewer with CodeMirror integration.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## Features
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+- **Custom Header**: Add a customizable header to the top of your Obsidian interface
+- **Menu Bar**: Create a dropdown menu bar with custom actions and commands
+- **Custom Note Viewer**: Replace the default note viewer with React components
+- **Form Builder**: Create forms with various field types including:
+  - Text inputs
+  - Text areas
+  - Select dropdowns
+  - Checkboxes
+  - CodeMirror editors for rich text editing
+- **Settings Panel**: Configure all aspects of the custom UI through the settings
 
-## First time developing plugins?
+## Installation
 
-Quick starting guide for new plugin devs:
+1. Build the plugin by running `npm run build`
+2. Copy `main.js`, `manifest.json`, and `styles.css` to your vault's plugin folder:
+   ```
+   <Vault>/.obsidian/plugins/obsidian-custom-ui-plugin/
+   ```
+3. Reload Obsidian
+4. Enable the plugin in **Settings → Community plugins**
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## Usage
 
-## Releasing new releases
+### Basic Setup
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+1. Open **Settings → Community plugins**
+2. Find "Custom UI Plugin" and enable it
+3. Go to the plugin settings to configure your UI
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+### Settings
 
-## Adding your plugin to the community plugin list
+The plugin provides several configuration options:
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+- **Enable Custom UI**: Toggle the entire custom UI system on/off
+- **Show Header**: Enable/disable the custom header
+- **Header Height**: Adjust the height of the header (40-100px)
+- **Show Menu Bar**: Enable/disable the menu bar
+- **Menu Bar Height**: Adjust the height of the menu bar (30-60px)
 
-## How to use
+### Commands
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+The plugin adds several commands accessible via the Command Palette:
 
-## Manually installing the plugin
+- **Toggle Custom UI**: Enable/disable the custom UI
+- **Reload Custom UI**: Reload the custom UI components
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+### Custom Note Viewer
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint ./src/`
+The custom note viewer includes a form with the following fields:
 
-## Funding URL
+- **Note Title**: Text input for the note title
+- **Note Content**: CodeMirror editor for rich text editing
+- **Tags**: Text input for comma-separated tags
+- **Category**: Dropdown selection for note categories
+- **Important**: Checkbox to mark notes as important
 
-You can include funding URLs where people who use your plugin can financially support it.
+## Development
 
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
+### Project Structure
 
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+```
+src/
+├── components/          # React components
+│   ├── Header.tsx      # Custom header component
+│   ├── MenuBar.tsx     # Menu bar with dropdowns
+│   ├── FormField.tsx   # Individual form field component
+│   └── CustomNoteViewer.tsx # Main note viewer component
+├── ui/                 # UI management
+│   ├── UIManager.ts    # Main UI restructuring logic
+│   └── SettingsTab.ts  # Settings panel
+├── utils/              # Utility functions
+│   └── codemirror-setup.ts # CodeMirror integration
+└── types/              # TypeScript type definitions
+    └── index.ts
 ```
 
-If you have multiple URLs, you can also do:
+### Building
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+```bash
+# Install dependencies
+npm install
+
+# Development build with watch mode
+npm run dev
+
+# Production build
+npm run build
 ```
 
-## API Documentation
+### Adding New Form Fields
 
-See https://github.com/obsidianmd/obsidian-api
+To add new form field types, modify the `FormField` component in `src/components/FormField.tsx` and add the new type to the `FormField` interface in `src/types/index.ts`.
+
+### Customizing the Menu Bar
+
+Edit the `menuItems` array in `src/ui/UIManager.ts` to add new menu items and actions.
+
+## Technical Details
+
+- **React 18**: Modern React with hooks and functional components
+- **TypeScript**: Full type safety throughout the codebase
+- **CodeMirror**: Rich text editing capabilities (simplified implementation to avoid version conflicts)
+- **Obsidian API**: Full integration with Obsidian's plugin system
+- **CSS Variables**: Uses Obsidian's CSS variables for consistent theming
+
+## Troubleshooting
+
+### Plugin Not Loading
+
+1. Ensure all files (`main.js`, `manifest.json`, `styles.css`) are in the correct plugin folder
+2. Check the Obsidian console for any error messages
+3. Try reloading the plugin or restarting Obsidian
+
+### UI Not Appearing
+
+1. Check that "Enable Custom UI" is turned on in the plugin settings
+2. Try using the "Reload Custom UI" command
+3. Ensure the plugin is enabled in the Community plugins list
+
+### Build Issues
+
+1. Make sure all dependencies are installed: `npm install`
+2. Check that TypeScript compilation passes: `npm run build`
+3. Ensure Node.js version is 18+ (recommended)
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details.

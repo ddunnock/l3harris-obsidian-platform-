@@ -1,11 +1,11 @@
 {
-	"id": "l3harris-obsidian-platform",
-	"name": "L3Harris Obsidian Platform",
+	"id": "obsidian-custom-ui-plugin",
+	"name": "Custom UI Plugin",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "David Dunnock",
-	"authorUrl": "https://github.com/ddunnock",
-	"fundingUrl": "https://buymeacoffee.com/ddunnock",
+	"description": "A plugin that restructures Obsidian's UI with a custom header, menu bar, and React-based note viewer with CodeMirror integration.",
+	"author": "Custom UI Developer",
+	"authorUrl": "",
+	"fundingUrl": "",
 	"isDesktopOnly": true
 }
