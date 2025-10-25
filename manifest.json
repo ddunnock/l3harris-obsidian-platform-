@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "l3harris-obsidian-platform",
+	"name": "L3Harris Obsidian Platform",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+	"author": "David Dunnock",
+	"authorUrl": "https://github.com/ddunnock",
+	"fundingUrl": "https://buymeacoffee.com/ddunnock",
+	"isDesktopOnly": true
 }
