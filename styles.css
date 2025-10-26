@@ -1,8 +1,123 @@
-/*
+/* Custom UI Plugin Styles */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.custom-ui-container {
+	position: relative;
+	z-index: 1;
+}
 
-If your plugin does not need CSS, delete this file.
+.custom-ui-header {
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-*/
+.custom-ui-menu-bar {
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item {
+	position: relative;
+}
+
+.menu-item:hover .dropdown-menu {
+	display: block;
+}
+
+.dropdown-menu {
+	display: none;
+}
+
+.dropdown-menu:hover {
+	display: block;
+}
+
+.custom-ui-main-content {
+	position: relative;
+}
+
+.custom-note-viewer {
+	font-family: var(--font-text);
+}
+
+.custom-note-viewer h1,
+.custom-note-viewer h2,
+.custom-note-viewer h3 {
+	font-family: var(--font-text);
+}
+
+.custom-note-viewer input,
+.custom-note-viewer textarea,
+.custom-note-viewer select {
+	font-family: var(--font-text);
+}
+
+.custom-note-viewer button {
+	font-family: var(--font-text);
+	transition: all 0.2s ease;
+}
+
+.custom-note-viewer button:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* CodeMirror integration styles */
+.custom-note-viewer .cm-editor {
+	font-family: var(--font-monospace);
+}
+
+.custom-note-viewer .cm-focused {
+	outline: none;
+}
+
+.custom-note-viewer .cm-editor.cm-focused {
+	border-color: var(--interactive-accent);
+}
+
+/* Form field styles */
+.custom-note-viewer .form-field {
+	margin-bottom: 1rem;
+}
+
+.custom-note-viewer .form-field label {
+	display: block;
+	margin-bottom: 0.25rem;
+	font-weight: 500;
+}
+
+.custom-note-viewer .form-field input,
+.custom-note-viewer .form-field textarea,
+.custom-note-viewer .form-field select {
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	font-size: 14px;
+}
+
+.custom-note-viewer .form-field input:focus,
+.custom-note-viewer .form-field textarea:focus,
+.custom-note-viewer .form-field select:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.custom-ui-header h1 {
+		font-size: 18px;
+	}
+	
+	.custom-ui-menu-bar {
+		padding: 0 10px;
+	}
+	
+	.menu-item {
+		margin-right: 10px;
+	}
+	
+	.custom-note-viewer {
+		padding: 15px;
+	}
+}
