@@ -41,18 +41,20 @@ export class CustomUISettingsTab extends PluginSettingTab {
 					(this.plugin as any).uiManager?.updateSettings(this.settings);
 				}));
 
-		new Setting(containerEl)
-			.setName('Header Height')
-			.setDesc('Height of the header in pixels')
-			.addSlider(slider => slider
-				.setLimits(40, 100, 5)
-				.setValue(this.settings.headerHeight)
-				.setDynamicTooltip()
-				.onChange(async (value) => {
+	new Setting(containerEl)
+		.setName('Header Height')
+		.setDesc('Height of the header in pixels')
+		.addSlider(slider => slider
+			.setLimits(40, 100, 5)
+			.setValue(this.settings.headerHeight)
+			.setDynamicTooltip()
+			.onChange(async (value) => {
+				if (value >= 40 && value <= 100) {
 					this.settings.headerHeight = value;
 					await this.saveSettings();
 					(this.plugin as any).uiManager?.updateSettings(this.settings);
-				}));
+				}
+			}));
 
 		new Setting(containerEl)
 			.setName('Show Menu Bar')
@@ -65,18 +67,20 @@ export class CustomUISettingsTab extends PluginSettingTab {
 					(this.plugin as any).uiManager?.updateSettings(this.settings);
 				}));
 
-		new Setting(containerEl)
-			.setName('Menu Bar Height')
-			.setDesc('Height of the menu bar in pixels')
-			.addSlider(slider => slider
-				.setLimits(30, 60, 5)
-				.setValue(this.settings.menuBarHeight)
-				.setDynamicTooltip()
-				.onChange(async (value) => {
+	new Setting(containerEl)
+		.setName('Menu Bar Height')
+		.setDesc('Height of the menu bar in pixels')
+		.addSlider(slider => slider
+			.setLimits(30, 60, 5)
+			.setValue(this.settings.menuBarHeight)
+			.setDynamicTooltip()
+			.onChange(async (value) => {
+				if (value >= 30 && value <= 60) {
 					this.settings.menuBarHeight = value;
 					await this.saveSettings();
 					(this.plugin as any).uiManager?.updateSettings(this.settings);
-				}));
+				}
+			}));
 
 		containerEl.createEl('h3', { text: 'About' });
 		containerEl.createEl('p', { 
@@ -85,6 +89,26 @@ export class CustomUISettingsTab extends PluginSettingTab {
 	}
 
 	private async saveSettings(): Promise<void> {
-		await (this.plugin as any).saveData(this.settings);
+		try {
+			// Validate settings before saving
+			this.validateSettings();
+			await (this.plugin as any).saveData(this.settings);
+		} catch (error) {
+			console.error('Error saving settings:', error);
+			// Show error notification
+			new (this.app as any).Notice('Error saving settings. Please try again.');
+		}
+	}
+
+	private validateSettings(): void {
+		// Validate header height
+		if (this.settings.headerHeight < 40 || this.settings.headerHeight > 100) {
+			throw new Error('Header height must be between 40 and 100 pixels');
+		}
+		
+		// Validate menu bar height
+		if (this.settings.menuBarHeight < 30 || this.settings.menuBarHeight > 60) {
+			throw new Error('Menu bar height must be between 30 and 60 pixels');
+		}
 	}
 }

@@ -204,56 +204,121 @@ export class UIManager {
 		// Handle field changes
 	}
 
-	private handleFormSubmit(data: Record<string, string>): void {
+	private async handleFormSubmit(data: Record<string, string>): Promise<void> {
 		console.log('Form submitted with data:', data);
-		// Handle form submission
-		this.app.workspace.openLinkText('', '', true);
+		
+		try {
+			// Create a new note with the form data
+			const title = data.title || 'Untitled Note';
+			const content = data.content || '';
+			const tags = data.tags ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+			const category = data.category || '';
+			const isImportant = data.isImportant === 'true';
+			
+			// Create the note content
+			let noteContent = `# ${title}\n\n`;
+			
+			if (category) {
+				noteContent += `**Category:** ${category}\n\n`;
+			}
+			
+			if (isImportant) {
+				noteContent += `**Important:** Yes\n\n`;
+			}
+			
+			if (tags.length > 0) {
+				noteContent += `**Tags:** ${tags.map(tag => `#${tag}`).join(' ')}\n\n`;
+			}
+			
+			noteContent += `---\n\n${content}`;
+			
+			// Create the file
+			const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+			const fileName = `${title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim() || 'Untitled Note'} ${timestamp}.md`;
+			
+			await this.app.vault.create(fileName, noteContent);
+			
+			// Open the newly created note
+			await this.app.workspace.openLinkText(fileName, '', true);
+			console.log('Note created successfully:', fileName);
+			
+			// Show success notification
+			new (this.app as any).Notice('Note created successfully!');
+			
+		} catch (error) {
+			console.error('Error creating note:', error);
+			// Show error notification
+			new (this.app as any).Notice('Error creating note. Please try again.');
+			throw error; // Re-throw to let the form handle the error state
+		}
 	}
 
 	// Menu actions
 	private createNewNote(): void {
-		console.log('Creating new note');
-		// Implementation for creating new note
+		const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+		const fileName = `New Note ${timestamp}.md`;
+		const content = `# New Note\n\nCreated on ${new Date().toLocaleString()}\n\n`;
+		
+		this.app.vault.create(fileName, content).then(() => {
+			this.app.workspace.openLinkText(fileName, '', true);
+		}).catch((error) => {
+			console.error('Error creating new note:', error);
+		});
 	}
 
 	private openNote(): void {
-		console.log('Opening note');
-		// Implementation for opening note
+		// Open the file picker
+		const files = this.app.vault.getMarkdownFiles();
+		if (files.length > 0) {
+			// For now, open the first file as a simple implementation
+			// In a real implementation, you'd show a file picker modal
+			this.app.workspace.openLinkText(files[0].path, '', true);
+		}
 	}
 
 	private saveNote(): void {
-		console.log('Saving note');
-		// Implementation for saving note
+		// Get the currently active file
+		const activeFile = this.app.workspace.getActiveFile();
+		if (activeFile) {
+			// Trigger save command
+			this.app.commands.executeCommandById('file:save');
+		} else {
+			console.log('No active file to save');
+		}
 	}
 
 	private undo(): void {
-		console.log('Undo');
-		// Implementation for undo
+		// Trigger undo command
+		this.app.commands.executeCommandById('editor:undo');
 	}
 
 	private redo(): void {
-		console.log('Redo');
-		// Implementation for redo
+		// Trigger redo command
+		this.app.commands.executeCommandById('editor:redo');
 	}
 
 	private find(): void {
-		console.log('Find');
-		// Implementation for find
+		// Trigger find command
+		this.app.commands.executeCommandById('editor:start-search');
 	}
 
 	private toggleSidebar(): void {
-		console.log('Toggle sidebar');
-		// Implementation for toggling sidebar
+		// Toggle left sidebar
+		this.app.workspace.toggleLeftSidebar();
 	}
 
 	private toggleMenuBar(): void {
-		console.log('Toggle menu bar');
-		// Implementation for toggling menu bar
+		// Toggle the custom menu bar
+		this.settings.showMenuBar = !this.settings.showMenuBar;
+		(this.app as any).plugins.plugins['obsidian-custom-ui-plugin']?.saveSettings();
+		// Re-render the UI
+		this.renderComponents();
 	}
 
 	private showHelp(): void {
-		console.log('Show help');
-		// Implementation for showing help
+		// Open the plugin settings
+		(this.app as any).setting.open();
+		(this.app as any).setting.openTabById('obsidian-custom-ui-plugin');
 	}
 
 	async cleanup(): Promise<void> {

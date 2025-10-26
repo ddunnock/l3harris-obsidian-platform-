@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { FormField as FormFieldType } from '../types';
 import { createCodeMirrorEditor, destroyCodeMirrorEditor } from '../utils/codemirror-setup';
+import { EditorView } from '@codemirror/view';
 
 interface FormFieldProps {
 	field: FormFieldType;
@@ -9,7 +10,7 @@ interface FormFieldProps {
 
 export const FormField: React.FC<FormFieldProps> = ({ field, onChange }) => {
 	const codemirrorRef = useRef<HTMLDivElement>(null);
-	const editorRef = useRef<any>(null);
+	const editorRef = useRef<EditorView | null>(null);
 
 	useEffect(() => {
 		if (field.type === 'codemirror' && codemirrorRef.current) {
@@ -23,9 +24,23 @@ export const FormField: React.FC<FormFieldProps> = ({ field, onChange }) => {
 		return () => {
 			if (editorRef.current) {
 				destroyCodeMirrorEditor(editorRef.current);
+				editorRef.current = null;
 			}
 		};
 	}, [field.type, field.id, onChange]);
+
+	// Update editor content when field value changes externally
+	useEffect(() => {
+		if (field.type === 'codemirror' && editorRef.current && editorRef.current.state.doc.toString() !== field.value) {
+			editorRef.current.dispatch({
+				changes: {
+					from: 0,
+					to: editorRef.current.state.doc.length,
+					insert: field.value
+				}
+			});
+		}
+	}, [field.value, field.type]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
 		onChange(field.id, e.target.value);
