@@ -19,6 +19,8 @@ export const CustomNoteViewer: React.FC<CustomNoteViewerProps> = ({
 			return acc;
 		}, {} as Record<string, string>)
 	);
+	const [errors, setErrors] = useState<Record<string, string>>({});
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const handleFieldChange = (fieldId: string, value: string) => {
 		setFormData(prev => ({
@@ -26,11 +28,51 @@ export const CustomNoteViewer: React.FC<CustomNoteViewerProps> = ({
 			[fieldId]: value,
 		}));
 		onFieldChange(fieldId, value);
+		
+		// Clear error when user starts typing
+		if (errors[fieldId]) {
+			setErrors(prev => ({
+				...prev,
+				[fieldId]: '',
+			}));
+		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const validateForm = (): boolean => {
+		const newErrors: Record<string, string> = {};
+		
+		formFields.forEach(field => {
+			if (field.required && (!formData[field.id] || formData[field.id].trim() === '')) {
+				newErrors[field.id] = `${field.label} is required`;
+			}
+		});
+		
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		onSubmit(formData);
+		
+		if (!validateForm()) {
+			return;
+		}
+		
+		setIsSubmitting(true);
+		try {
+			await onSubmit(formData);
+			// Reset form after successful submission
+			const resetData = formFields.reduce((acc, field) => {
+				acc[field.id] = field.value;
+				return acc;
+			}, {} as Record<string, string>);
+			setFormData(resetData);
+			setErrors({});
+		} catch (error) {
+			console.error('Form submission error:', error);
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -62,15 +104,26 @@ export const CustomNoteViewer: React.FC<CustomNoteViewerProps> = ({
 					</p>
 				</div>
 
-				<div style={{ marginBottom: '24px' }}>
-					{formFields.map((field) => (
+			<div style={{ marginBottom: '24px' }}>
+				{formFields.map((field) => (
+					<div key={field.id}>
 						<FormFieldComponent
-							key={field.id}
 							field={field}
 							onChange={handleFieldChange}
 						/>
-					))}
-				</div>
+						{errors[field.id] && (
+							<div style={{
+								color: 'var(--text-error)',
+								fontSize: '12px',
+								marginTop: '4px',
+								marginLeft: '4px',
+							}}>
+								{errors[field.id]}
+							</div>
+						)}
+					</div>
+				))}
+			</div>
 
 				<div style={{
 					display: 'flex',
@@ -78,21 +131,23 @@ export const CustomNoteViewer: React.FC<CustomNoteViewerProps> = ({
 					paddingTop: '20px',
 					borderTop: '1px solid var(--background-modifier-border)',
 				}}>
-					<button
-						type="submit"
-						style={{
-							backgroundColor: 'var(--interactive-accent)',
-							color: 'var(--text-on-accent)',
-							border: 'none',
-							padding: '10px 20px',
-							borderRadius: '4px',
-							cursor: 'pointer',
-							fontSize: '14px',
-							fontWeight: '500',
-						}}
-					>
-						Save Note
-					</button>
+				<button
+					type="submit"
+					disabled={isSubmitting}
+					style={{
+						backgroundColor: isSubmitting ? 'var(--background-modifier-border)' : 'var(--interactive-accent)',
+						color: isSubmitting ? 'var(--text-muted)' : 'var(--text-on-accent)',
+						border: 'none',
+						padding: '10px 20px',
+						borderRadius: '4px',
+						cursor: isSubmitting ? 'not-allowed' : 'pointer',
+						fontSize: '14px',
+						fontWeight: '500',
+						opacity: isSubmitting ? 0.7 : 1,
+					}}
+				>
+					{isSubmitting ? 'Saving...' : 'Save Note'}
+				</button>
 					<button
 						type="button"
 						onClick={() => {

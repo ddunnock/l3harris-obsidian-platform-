@@ -3,14 +3,28 @@
 .custom-ui-container {
 	position: relative;
 	z-index: 1;
+	transition: all 0.3s ease;
 }
 
 .custom-ui-header {
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
 }
 
 .custom-ui-menu-bar {
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
+}
+
+/* Theme support */
+.theme-dark .custom-ui-header,
+.theme-dark .custom-ui-menu-bar {
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.theme-light .custom-ui-header,
+.theme-light .custom-ui-menu-bar {
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .menu-item {
@@ -111,13 +125,89 @@
 	
 	.custom-ui-menu-bar {
 		padding: 0 10px;
+		flex-wrap: wrap;
 	}
 	
 	.menu-item {
 		margin-right: 10px;
+		margin-bottom: 4px;
 	}
 	
 	.custom-note-viewer {
 		padding: 15px;
+	}
+	
+	.custom-note-viewer .form-field {
+		margin-bottom: 1.5rem;
+	}
+	
+	.custom-note-viewer button {
+		padding: 8px 16px;
+		font-size: 13px;
+	}
+}
+
+@media (max-width: 480px) {
+	.custom-ui-header {
+		padding: 0 10px;
+	}
+	
+	.custom-ui-header h1 {
+		font-size: 16px;
+	}
+	
+	.custom-ui-menu-bar {
+		padding: 0 5px;
+	}
+	
+	.menu-item {
+		margin-right: 5px;
+	}
+	
+	.custom-note-viewer {
+		padding: 10px;
+	}
+	
+	.dropdown-menu {
+		min-width: 120px;
+	}
+}
+
+/* Accessibility improvements */
+.custom-ui-header h1:focus,
+.custom-ui-menu-bar button:focus,
+.custom-note-viewer button:focus {
+	outline: 2px solid var(--interactive-accent);
+	outline-offset: 2px;
+}
+
+.custom-note-viewer input:focus,
+.custom-note-viewer textarea:focus,
+.custom-note-viewer select:focus {
+	outline: 2px solid var(--interactive-accent);
+	outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+	.custom-ui-header,
+	.custom-ui-menu-bar {
+		border: 2px solid var(--text-normal);
+	}
+	
+	.custom-note-viewer input,
+	.custom-note-viewer textarea,
+	.custom-note-viewer select {
+		border: 2px solid var(--text-normal);
+	}
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+	.custom-ui-container,
+	.custom-ui-header,
+	.custom-ui-menu-bar,
+	.custom-note-viewer button {
+		transition: none;
 	}
 }

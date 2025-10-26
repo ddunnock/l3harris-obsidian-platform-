@@ -1,44 +1,71 @@
-// Simplified CodeMirror setup to avoid version conflicts
+import { EditorView, basicSetup } from '@codemirror/basic-setup';
+import { EditorState } from '@codemirror/state';
+import { markdown } from '@codemirror/lang-markdown';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { keymap } from '@codemirror/view';
+import { defaultKeymap } from '@codemirror/commands';
+
 export function createCodeMirrorEditor(
 	parent: HTMLElement,
 	initialValue: string = '',
 	onChange?: (value: string) => void
-): any {
-	// Create a simple textarea for now to avoid CodeMirror version conflicts
-	const textarea = document.createElement('textarea');
-	textarea.value = initialValue;
-	textarea.style.width = '100%';
-	textarea.style.height = '200px';
-	textarea.style.fontFamily = 'var(--font-monospace)';
-	textarea.style.fontSize = '14px';
-	textarea.style.padding = '8px';
-	textarea.style.border = '1px solid var(--background-modifier-border)';
-	textarea.style.borderRadius = '4px';
-	textarea.style.backgroundColor = 'var(--background-primary)';
-	textarea.style.color = 'var(--text-normal)';
-	textarea.style.resize = 'vertical';
+): EditorView {
+	// Check if we're in dark mode
+	const isDarkMode = document.body.classList.contains('theme-dark') || 
+		document.body.classList.contains('obsidian-theme-dark');
 	
-	if (onChange) {
-		textarea.addEventListener('input', () => {
-			onChange(textarea.value);
-		});
+	const extensions = [
+		basicSetup,
+		markdown(),
+		keymap.of(defaultKeymap),
+		EditorView.updateListener.of((update) => {
+			if (update.docChanged && onChange) {
+				onChange(update.state.doc.toString());
+			}
+		}),
+		EditorView.theme({
+			'&': {
+				fontSize: '14px',
+				fontFamily: 'var(--font-monospace)',
+			},
+			'.cm-content': {
+				padding: '8px',
+				minHeight: '200px',
+			},
+			'.cm-focused': {
+				outline: 'none',
+			},
+			'.cm-editor': {
+				border: '1px solid var(--background-modifier-border)',
+				borderRadius: '4px',
+			},
+			'.cm-editor.cm-focused': {
+				borderColor: 'var(--interactive-accent)',
+				boxShadow: '0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2)',
+			},
+		}),
+	];
+
+	// Add dark theme if needed
+	if (isDarkMode) {
+		extensions.push(oneDark);
 	}
-	
-	parent.appendChild(textarea);
-	
-	return {
-		destroy: () => {
-			textarea.remove();
-		},
-		getValue: () => textarea.value,
-		setValue: (value: string) => {
-			textarea.value = value;
-		}
-	};
+
+	const state = EditorState.create({
+		doc: initialValue,
+		extensions,
+	});
+
+	const view = new EditorView({
+		state,
+		parent,
+	});
+
+	return view;
 }
 
-export function destroyCodeMirrorEditor(editor: any): void {
-	if (editor && editor.destroy) {
+export function destroyCodeMirrorEditor(editor: EditorView): void {
+	if (editor) {
 		editor.destroy();
 	}
 }

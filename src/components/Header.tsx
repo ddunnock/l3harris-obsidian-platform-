@@ -5,7 +5,7 @@ interface HeaderProps {
 	height: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title, height }) => {
+export const Header: React.FC<HeaderProps> = React.memo(({ title, height }) => {
 	return (
 		<div 
 			className="custom-ui-header"
